@@ -44,3 +44,16 @@ The test project received FluentAssertions and Moq. These will help us write cle
 
 We did not add Identity, JWT, email, file storage, or AutoMapper yet. Those will come later when the developer understands the basic architecture flow.
 
+## Phase 4 — First Shared Foundation Classes
+
+In this phase, we created the first reusable foundation classes for the backend architecture. These classes are small, but they will be used across many future modules.
+
+The `BaseEntity` class lives in the Domain project. It gives future business entities a common structure, including an Id, created date, created by, updated date, updated by, and soft-delete flag. This means future entities such as `LandOpportunity` do not need to repeat these same fields again and again.
+
+The `ApiResponse<T>` class lives in the Shared project. It gives the API a consistent response shape, so endpoints can return success, message, data, and errors in a predictable way.
+
+The `PagedResult<T>` class prepares us for list screens. In real business applications, list pages may contain hundreds or thousands of records, so we need a standard way to return paginated data.
+
+We also created basic exception classes for not found, bad request, and forbidden access scenarios. These will later be used by middleware to return clean API error responses.
+
+The goal of this phase was to create simple reusable building blocks and confirm the solution still builds successfully.
