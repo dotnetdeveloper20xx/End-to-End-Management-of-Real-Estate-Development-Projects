@@ -122,3 +122,15 @@ We registered both middleware classes in `Program.cs` immediately after `builder
 
 The goal of this phase is to make the API more professional before adding business features. Even simple modules should sit inside clean error handling and request tracing.
 
+## Phase 10 — Connect LandOpportunity to EF Core
+
+In this phase, we connected the `LandOpportunity` domain entity to Entity Framework Core. Before this phase, `LandOpportunity` was only a C# class in the Domain project. Now Infrastructure knows that this entity should be mapped to a database table.
+
+We added `DbSet<LandOpportunity>` to `ApplicationDbContext`. A `DbSet` represents a table-like collection that EF Core can query and save.
+
+We also created `LandOpportunityConfiguration`. This configuration tells EF Core how to map the entity to SQL Server. It defines the table name, primary key, required fields, maximum string lengths, decimal precision for land size and asking price, and enum storage for the status.
+
+We used `HasConversion<string>()` for the status so the database stores readable values such as `Identified` instead of only numbers. We also added a query filter for soft delete, meaning records marked as deleted will not normally appear in queries.
+
+The goal of this phase is to connect the business entity to database mapping safely before creating migrations or API endpoints.
+
