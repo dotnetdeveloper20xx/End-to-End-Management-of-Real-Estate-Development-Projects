@@ -73,6 +73,19 @@ We also created basic exception classes for not found, bad request, and forbidde
 
 The goal of this phase was to create simple reusable building blocks and confirm the solution still builds successfully.
 
+## Developer Note — Current User, Roles, and Permissions
+
+At this stage, `ICurrentUserService` only tracks basic current-user information: user id, username, email, and whether the request is authenticated. This is enough for early audit support, such as recording who created or updated a record.
+
+Roles and permissions are not added yet because we have not implemented authentication, JWT tokens, users, roles, or permission seeding. Adding them too early would confuse the architecture.
+
+Later, when authentication is introduced, the API will read the logged-in user from `HttpContext.User`. The JWT token will contain claims such as user id, email, name, and roles. The API implementation of `ICurrentUserService` will read those claims and expose them to the Application layer.
+
+Permissions should be handled separately through an `IPermissionService`. A user may have a role such as `AcquisitionManager`, and that role may have permissions such as `Land.View`, `Land.Create`, and `Land.Edit`.
+
+The key design principle is separation of responsibility. `ICurrentUserService` tells us who the user is. `IPermissionService` tells us what the user is allowed to do.
+
+
 ## Phase 6 — Infrastructure Foundation
 
 In this phase, we created the first Infrastructure-layer implementation classes. Infrastructure is the project responsible for technical details such as database access, file storage, email, external services, and other implementation concerns.
@@ -123,6 +136,7 @@ The entity inherits from `BaseEntity`, so it automatically has an Id, audit fiel
 
 The goal of this phase is to introduce the first business object slowly and clearly before connecting it to the database or API.
 
+
 ## Phase 10 — Connect LandOpportunity to EF Core
 
 In this phase, we connected the `LandOpportunity` domain entity to Entity Framework Core. Before this phase, `LandOpportunity` was only a C# class in the Domain project. Now Infrastructure knows that this entity should be mapped to a database table.
@@ -134,3 +148,4 @@ We also created `LandOpportunityConfiguration`. This configuration tells EF Core
 We used `HasConversion<string>()` for the status so the database stores readable values such as `Identified` instead of only numbers. We also added a query filter for soft delete, meaning records marked as deleted will not normally appear in queries.
 
 The goal of this phase is to connect the business entity to database mapping safely before creating migrations or API endpoints.
+
