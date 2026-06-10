@@ -72,3 +72,16 @@ The `PagedResult<T>` class prepares us for list screens. In real business applic
 We also created basic exception classes for not found, bad request, and forbidden access scenarios. These will later be used by middleware to return clean API error responses.
 
 The goal of this phase was to create simple reusable building blocks and confirm the solution still builds successfully.
+
+## Phase 6 — Infrastructure Foundation
+
+In this phase, we created the first Infrastructure-layer implementation classes. Infrastructure is the project responsible for technical details such as database access, file storage, email, external services, and other implementation concerns.
+
+We created `ApplicationDbContext`, which inherits from Entity Framework Core `DbContext` and implements `IUnitOfWork`. At this point, the context does not contain any business tables because we have not created the Land module yet. That is expected. The goal is only to prepare the database foundation.
+
+We also created `DateTimeProvider`, which implements `IDateTimeProvider`. This shows the Clean Architecture pattern clearly: the Application layer defines what it needs through an interface, and Infrastructure provides the real implementation.
+
+Finally, we created `AddInfrastructure()`, a dependency injection extension method. Later, the API project will call this method during startup to register EF Core, SQL Server, Unit of Work, and Infrastructure services.
+
+The important lesson is that Infrastructure depends on Application, but Application does not depend on Infrastructure. This keeps business use cases clean and testable.
+
