@@ -184,3 +184,88 @@ This demonstrates CQRS clearly. Commands change data, while queries read data.
 
 The Application layer still does not know about EF Core or SQL Server. It only depends on the repository abstraction. Infrastructure remains responsible for the actual EF Core implementation.
 
+# feat(land): establish backend foundation and initial land acquisition workflows
+
+Completed phases 0-13 of the BuildEstate Pro backend implementation.
+
+Project Foundation
+- Defined the project vision as an end-to-end real estate development lifecycle platform
+- Established the backend solution structure using Clean Architecture principles
+- Created API, Application, Domain, Infrastructure, Shared and Test projects
+- Added projects to the Visual Studio solution
+- Configured project references with correct dependency direction
+
+Architecture
+- Adopted a modular monolith approach with clear business module boundaries
+- Established Domain as the centre of the application
+- Kept Infrastructure concerns outside the Application and Domain layers
+- Introduced CQRS using MediatR
+- Introduced validation using FluentValidation
+- Avoided AutoMapper and used explicit mapping for clarity and maintainability
+
+Shared Foundation
+- Added BaseEntity with Id, audit fields and soft-delete support
+- Added ApiResponse<T> for consistent API responses
+- Added PagedResult<T> for future paginated list responses
+- Added common exception types for not found, bad request and forbidden access scenarios
+
+Application Layer
+- Added ICurrentUserService abstraction
+- Added IDateTimeProvider abstraction
+- Added IUnitOfWork abstraction
+- Added Application dependency injection registration
+- Added LandOpportunityDto
+- Added ILandOpportunityRepository abstraction
+- Added CreateLandOpportunityCommand
+- Added CreateLandOpportunityCommandValidator
+- Added CreateLandOpportunityCommandHandler
+- Added GetLandOpportunitiesQuery
+- Added GetLandOpportunitiesQueryHandler
+
+Infrastructure Layer
+- Configured Entity Framework Core
+- Configured SQL Server LocalDB support
+- Added ApplicationDbContext
+- Added ApplicationDbContextFactory for EF Core migration tooling
+- Added DateTimeProvider implementation
+- Added LandOpportunityRepository implementation
+- Added LandOpportunity EF Core configuration
+- Registered Infrastructure services through dependency injection
+
+API Layer
+- Configured Program.cs startup pipeline
+- Added controller support
+- Added Swagger/OpenAPI support
+- Added CORS configuration for frontend access
+- Added Health Check endpoint
+- Added Global Exception Middleware
+- Added Correlation ID Middleware
+
+Land Acquisition Module
+- Added LandOpportunity domain entity
+- Added LandOpportunityStatus lifecycle enum
+- Connected LandOpportunity to EF Core persistence
+- Added create workflow using CQRS command pattern
+- Added read workflow using CQRS query pattern
+- Kept EF Core usage inside Infrastructure
+- Preserved clean Application-layer boundaries through repository abstraction
+
+Database
+- Configured SQL Server LocalDB connection string
+- Prepared EF Core migration support
+- Prepared LandOpportunities table mapping
+- Established database persistence foundation for the Land module
+
+Developer Training
+- Added phase-by-phase implementation guidance
+- Documented architecture decisions
+- Captured mentoring notes for junior developer onboarding
+- Explained modular monolith, Clean Architecture, CQRS, repositories and EF Core boundaries
+
+Solution Status
+- Backend foundation complete
+- Land Acquisition domain foundation complete
+- First Land command implemented
+- First Land query implemented
+- Solution builds successfully
+- Ready for Land API controller and Swagger endpoint integration
