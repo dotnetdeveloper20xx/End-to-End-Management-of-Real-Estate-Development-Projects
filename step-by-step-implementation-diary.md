@@ -122,6 +122,21 @@ We registered both middleware classes in `Program.cs` immediately after `builder
 
 The goal of this phase is to make the API more professional before adding business features. Even simple modules should sit inside clean error handling and request tracing.
 
+## Phase 9 — First Land Domain Model
+
+In this phase, we created the first real business model for the BuildEstate Pro application: `LandOpportunity`.
+
+A land opportunity represents a possible piece of land that the company may want to buy and develop. At this stage, it is not yet a development project. It is simply an opportunity that needs to be reviewed, checked, valued, and possibly acquired.
+
+We also created `LandOpportunityStatus`, an enum that describes the lifecycle of the opportunity. The opportunity may start as `Identified`, move into `InitialReview`, then `DueDiligence`, then `OfferMade`, then `UnderContract`, and finally become either `Acquired` or `Rejected`.
+
+This class belongs in the Domain project because it is a business concept. It does not depend on Entity Framework, ASP.NET Core, controllers, SQL Server, or Swagger. It simply describes something important in the business.
+
+The entity inherits from `BaseEntity`, so it automatically has an Id, audit fields, and soft-delete support. This keeps future entities consistent and avoids repeating common fields.
+
+The goal of this phase is to introduce the first business object slowly and clearly before connecting it to the database or API.
+
+
 ## Phase 10 — Connect LandOpportunity to EF Core
 
 In this phase, we connected the `LandOpportunity` domain entity to Entity Framework Core. Before this phase, `LandOpportunity` was only a C# class in the Domain project. Now Infrastructure knows that this entity should be mapped to a database table.
