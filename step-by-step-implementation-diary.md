@@ -161,28 +161,15 @@ The goal of this phase is to create the first migration and apply it to SQL Serv
 
 ## Phase 12 — Create Land Opportunity Command
 
-In this phase, we created the first real Application-layer use case: `CreateLandOpportunityCommand`.
+In this phase, we created the first real CQRS use case for the Land module: `CreateLandOpportunityCommand`.
 
-This is the first time the system performs a meaningful business action. A user wants to create a new land opportunity, and the Application layer now has a command that represents that intention.
+The command represents the user’s intention to create a new land opportunity. The validator checks that required fields such as name, location, land size, asking price, and source are valid before the handler performs the business operation.
 
-We added a DTO called `LandOpportunityDto`. This is the response shape returned to the API or frontend. We do not return the domain entity directly because DTOs give us better control over what the outside world sees.
+The handler creates a `LandOpportunity` domain entity, sets its initial status to `Identified`, fills audit fields, and then saves it through `ILandOpportunityRepository` and `IUnitOfWork`.
 
-We created `CreateLandOpportunityCommand`, which contains the input fields needed to create a land opportunity. We also created `CreateLandOpportunityCommandValidator` using FluentValidation. This ensures required fields are present and values such as land size and asking price are sensible.
+We deliberately avoided using EF Core directly in the Application layer. The Application layer only knows about the repository interface. The EF Core implementation lives in Infrastructure inside `LandOpportunityRepository`.
 
-We introduced `IApplicationDbContext` so the Application layer can work with Land opportunities without directly referencing Infrastructure. Infrastructure implements this interface through `ApplicationDbContext`.
+This keeps the architecture clean. CQRS organises the use case, while the repository protects the Application layer from database technology.
 
-Finally, the command handler creates a `LandOpportunity`, sets its default status to `Identified`, fills audit fields, saves the record, and returns a DTO.
+At the end of this phase, the solution should build successfully and the Land module has its first business command.
 
-This phase introduces the first complete CQRS command flow.
-
-## Architecture Correction — Remove EF Core from Application Layer
-
-During Phase 12, we noticed an important Clean Architecture issue. The first version of `IApplicationDbContext` exposed `DbSet<LandOpportunity>`, which meant the Application layer had to reference Entity Framework Core. That is not ideal because EF Core is an Infrastructure concern.
-
-We corrected the design by removing `IApplicationDbContext` and replacing it with a business-focused repository abstraction: `ILandOpportunityRepository`. This interface lives in the Application layer but does not mention EF Core, SQL Server, or `DbSet`. It only describes the operations the application needs, such as adding a land opportunity or retrieving one by id.
-
-Infrastructure now implements this repository using EF Core inside `LandOpportunityRepository`. This keeps EF Core where it belongs: inside the Infrastructure project.
-
-The command handler now depends on `ILandOpportunityRepository` and `IUnitOfWork`, not on `ApplicationDbContext` or `DbSet`.
-
-This is a stronger Clean Architecture design and teaches an important principle: Application should depend on business abstractions, not infrastructure technology.
