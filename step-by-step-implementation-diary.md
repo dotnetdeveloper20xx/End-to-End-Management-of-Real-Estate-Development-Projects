@@ -85,3 +85,16 @@ Finally, we created `AddInfrastructure()`, a dependency injection extension meth
 
 The important lesson is that Infrastructure depends on Application, but Application does not depend on Infrastructure. This keeps business use cases clean and testable.
 
+## Phase 7 — API Startup Wiring
+
+In this phase, we connected the API project to the rest of the backend architecture. The API project is the entry point of the application. When the backend starts, `Program.cs` decides which services are registered and which middleware is active.
+
+We registered controllers so the API can expose HTTP endpoints. We registered Swagger so developers can test endpoints from the browser. We called `AddApplication()` to register MediatR and FluentValidation from the Application layer. We called `AddInfrastructure()` to register Entity Framework Core, SQL Server, Unit of Work, and technical services from the Infrastructure layer.
+
+We also added a connection string in `appsettings.json`. This tells Infrastructure where the SQL Server database will be created later. At this stage, no database tables exist yet because we have not created any business entities.
+
+Finally, we added a health check endpoint at `/health`. This gives us a simple way to confirm that the API is running.
+
+The goal of this phase is to prove that the API can start, load all architecture layers, show Swagger, and respond to a basic health check.
+
+
