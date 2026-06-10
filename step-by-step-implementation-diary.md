@@ -149,3 +149,13 @@ We used `HasConversion<string>()` for the status so the database stores readable
 
 The goal of this phase is to connect the business entity to database mapping safely before creating migrations or API endpoints.
 
+## Phase 11 Note — LocalDB Instance Selection
+
+The developer checked available SQL LocalDB instances and found `MSSQLLocalDB` and `ProjectsV13`. We selected `MSSQLLocalDB` because it is the standard LocalDB instance commonly used for local .NET development.
+
+The connection string now points to `(localdb)\MSSQLLocalDB` and will create a database called `BuildEstateDb`. This keeps the project simple and local, without requiring full SQL Server setup.
+
+We also added an EF Core design-time DbContext factory. This factory helps the EF Core migration tools create `ApplicationDbContext` even when the full API is not running.
+
+The goal of this phase is to create the first migration and apply it to SQL Server LocalDB. Once completed, the `LandOpportunities` table should exist in the database.
+
