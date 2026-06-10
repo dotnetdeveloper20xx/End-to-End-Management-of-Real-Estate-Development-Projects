@@ -29,3 +29,18 @@ This structure protects the core business logic. We do not want the Domain proje
 The key rule is simple: dependencies should point inward. Outer projects can depend on inner projects, but inner projects should not depend on outer projects.
 
 After adding the references, we ran `dotnet build` to confirm that the solution still compiles successfully.
+
+## Phase 3 — Add Minimal NuGet Packages
+
+In this phase, we added only the NuGet packages needed for the early backend foundation. We deliberately avoided adding too many packages at once because that can confuse the architecture and make errors harder to diagnose.
+
+The Application project received MediatR and FluentValidation. MediatR will help us organise business use cases as commands and queries. FluentValidation will help us validate user input in a clean and testable way.
+
+The Infrastructure project received Entity Framework Core, the SQL Server provider, and EF Core Design. These packages allow the application to connect to SQL Server and later create database migrations.
+
+The API project received Swagger support so we can test endpoints from the browser once we create controllers.
+
+The test project received FluentAssertions and Moq. These will help us write clear tests for the application layer.
+
+We did not add Identity, JWT, email, file storage, or AutoMapper yet. Those will come later when the developer understands the basic architecture flow.
+
