@@ -52,6 +52,21 @@ The `BaseEntity` class lives in the Domain project. It gives future business ent
 
 The `ApiResponse<T>` class lives in the Shared project. It gives the API a consistent response shape, so endpoints can return success, message, data, and errors in a predictable way.
 
+## Phase 5 — Application Abstractions and Dependency Injection
+
+In this phase, we added the first Application-layer abstractions. These interfaces allow the Application project to describe what it needs without depending on technical details.
+
+`ICurrentUserService` represents the currently logged-in user. The Application layer can use this later to record who created or updated a record, but it does not need to know anything about HTTP, JWT, or ASP.NET Core.
+
+`IDateTimeProvider` gives the application a testable way to access the current UTC time. This is better than calling `DateTime.UtcNow` everywhere because tests can later control the time if needed.
+
+`IUnitOfWork` gives the Application layer a simple abstraction for saving changes. Infrastructure will later implement this using Entity Framework Core.
+
+We also created an `AddApplication()` dependency injection method. This registers MediatR and FluentValidation from the Application assembly. Later, the API project will call this method in `Program.cs`.
+
+The goal of this phase is to keep the Application layer clean, testable, and independent from Infrastructure and API details.
+
+
 The `PagedResult<T>` class prepares us for list screens. In real business applications, list pages may contain hundreds or thousands of records, so we need a standard way to return paginated data.
 
 We also created basic exception classes for not found, bad request, and forbidden access scenarios. These will later be used by middleware to return clean API error responses.
