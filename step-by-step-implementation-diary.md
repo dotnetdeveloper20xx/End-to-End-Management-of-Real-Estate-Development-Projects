@@ -159,3 +159,30 @@ We also added an EF Core design-time DbContext factory. This factory helps the E
 
 The goal of this phase is to create the first migration and apply it to SQL Server LocalDB. Once completed, the `LandOpportunities` table should exist in the database.
 
+## Phase 12 — Create Land Opportunity Command
+
+In this phase, we created the first real Application-layer use case: `CreateLandOpportunityCommand`.
+
+This is the first time the system performs a meaningful business action. A user wants to create a new land opportunity, and the Application layer now has a command that represents that intention.
+
+We added a DTO called `LandOpportunityDto`. This is the response shape returned to the API or frontend. We do not return the domain entity directly because DTOs give us better control over what the outside world sees.
+
+We created `CreateLandOpportunityCommand`, which contains the input fields needed to create a land opportunity. We also created `CreateLandOpportunityCommandValidator` using FluentValidation. This ensures required fields are present and values such as land size and asking price are sensible.
+
+We introduced `IApplicationDbContext` so the Application layer can work with Land opportunities without directly referencing Infrastructure. Infrastructure implements this interface through `ApplicationDbContext`.
+
+Finally, the command handler creates a `LandOpportunity`, sets its default status to `Identified`, fills audit fields, saves the record, and returns a DTO.
+
+This phase introduces the first complete CQRS command flow.
+
+## Architecture Correction — Remove EF Core from Application Layer
+
+During Phase 12, we noticed an important Clean Architecture issue. The first version of `IApplicationDbContext` exposed `DbSet<LandOpportunity>`, which meant the Application layer had to reference Entity Framework Core. That is not ideal because EF Core is an Infrastructure concern.
+
+We corrected the design by removing `IApplicationDbContext` and replacing it with a business-focused repository abstraction: `ILandOpportunityRepository`. This interface lives in the Application layer but does not mention EF Core, SQL Server, or `DbSet`. It only describes the operations the application needs, such as adding a land opportunity or retrieving one by id.
+
+Infrastructure now implements this repository using EF Core inside `LandOpportunityRepository`. This keeps EF Core where it belongs: inside the Infrastructure project.
+
+The command handler now depends on `ILandOpportunityRepository` and `IUnitOfWork`, not on `ApplicationDbContext` or `DbSet`.
+
+This is a stronger Clean Architecture design and teaches an important principle: Application should depend on business abstractions, not infrastructure technology.
