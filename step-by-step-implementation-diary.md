@@ -172,4 +172,15 @@ We deliberately avoided using EF Core directly in the Application layer. The App
 This keeps the architecture clean. CQRS organises the use case, while the repository protects the Application layer from database technology.
 
 At the end of this phase, the solution should build successfully and the Land module has its first business command.
+## Phase 13 — Add Get Land Opportunities Query
+
+In this phase, we added the read side of the Land module.
+
+The repository already had `GetAllAsync`, so we did not change the repository interface. Instead, we created `GetLandOpportunitiesQuery` and `GetLandOpportunitiesQueryHandler`.
+
+The query represents a request to read land opportunities. It does not change the system. The handler calls `ILandOpportunityRepository.GetAllAsync`, receives the domain entities, and maps them into `LandOpportunityDto` objects.
+
+This demonstrates CQRS clearly. Commands change data, while queries read data.
+
+The Application layer still does not know about EF Core or SQL Server. It only depends on the repository abstraction. Infrastructure remains responsible for the actual EF Core implementation.
 
