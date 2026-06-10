@@ -97,4 +97,15 @@ Finally, we added a health check endpoint at `/health`. This gives us a simple w
 
 The goal of this phase is to prove that the API can start, load all architecture layers, show Swagger, and respond to a basic health check.
 
+## Phase 8 — Global Exception Middleware and Correlation ID
+
+In this phase, we added two small but important API middleware components.
+
+The first is `GlobalExceptionMiddleware`. Its job is to catch unhandled exceptions in one central place and return a consistent JSON response to the client. Without this middleware, different parts of the API may return different error formats. A consistent error response makes the API easier to test, debug, and consume from the frontend.
+
+The second is `CorrelationIdMiddleware`. Its job is to attach a unique tracking ID to each request. If the client sends an `X-Correlation-ID` header, the API keeps it. If not, the API creates one. The same ID is returned in the response header. Later, this helps developers trace problems through logs.
+
+We registered both middleware classes in `Program.cs` immediately after `builder.Build()`. This means they run early in the request pipeline.
+
+The goal of this phase is to make the API more professional before adding business features. Even simple modules should sit inside clean error handling and request tracing.
 
