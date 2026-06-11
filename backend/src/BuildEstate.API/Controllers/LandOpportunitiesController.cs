@@ -1,4 +1,5 @@
 ﻿using BuildEstate.Application.Land.Commands.CreateLandOpportunity;
+using BuildEstate.Application.Land.Commands.UpdateLandOpportunity;
 using BuildEstate.Application.Land.Queries.GetLandOpportunities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,17 @@ public class LandOpportunitiesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10,
+    CancellationToken cancellationToken = default)
     {
         var result = await _mediator.Send(
-            new GetLandOpportunitiesQuery(),
+            new GetLandOpportunitiesQuery
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            },
             cancellationToken);
 
         return Ok(result);
@@ -37,5 +45,21 @@ public class LandOpportunitiesController : ControllerBase
             nameof(GetAll),
             new { id = result.Id },
             result);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(
+    Guid id,
+    UpdateLandOpportunityCommand command,
+    CancellationToken cancellationToken)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest("Route id does not match request body id.");
+        }
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return Ok(result);
     }
 }

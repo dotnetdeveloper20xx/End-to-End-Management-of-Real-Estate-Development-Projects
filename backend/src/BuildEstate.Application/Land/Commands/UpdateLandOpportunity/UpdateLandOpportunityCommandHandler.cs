@@ -1,22 +1,20 @@
 ﻿using BuildEstate.Application.Abstractions;
-using BuildEstate.Application.Common.Repositories;
 using BuildEstate.Application.Land.DTOs;
 using BuildEstate.Application.Land.Repositories;
-using BuildEstate.Domain.Land;
-using BuildEstate.Domain.Land.Enums;
+using BuildEstate.Shared.Exceptions;
 using MediatR;
 
-namespace BuildEstate.Application.Land.Commands.CreateLandOpportunity;
+namespace BuildEstate.Application.Land.Commands.UpdateLandOpportunity;
 
-public class CreateLandOpportunityCommandHandler
-    : IRequestHandler<CreateLandOpportunityCommand, LandOpportunityDto>
+public class UpdateLandOpportunityCommandHandler
+    : IRequestHandler<UpdateLandOpportunityCommand, LandOpportunityDto>
 {
     private readonly ILandOpportunityRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ICurrentUserService _currentUserService;
 
-    public CreateLandOpportunityCommandHandler(
+    public UpdateLandOpportunityCommandHandler(
         ILandOpportunityRepository repository,
         IUnitOfWork unitOfWork,
         IDateTimeProvider dateTimeProvider,
@@ -29,25 +27,29 @@ public class CreateLandOpportunityCommandHandler
     }
 
     public async Task<LandOpportunityDto> Handle(
-        CreateLandOpportunityCommand request,
+        UpdateLandOpportunityCommand request,
         CancellationToken cancellationToken)
     {
-        var entity = new LandOpportunity
-        {
-            Name = request.Name,
-            Location = request.Location,
-            LandSizeAcres = request.LandSizeAcres,
-            AskingPrice = request.AskingPrice,
-            Source = request.Source,
-            AgentName = request.AgentName,
-            ExpectedAcquisitionDate = request.ExpectedAcquisitionDate,
-            Notes = request.Notes,
-            Status = LandOpportunityStatus.Identified,
-            CreatedAtUtc = _dateTimeProvider.UtcNow,
-            CreatedBy = _currentUserService.UserId
-        };
+        var entity = await _repository.GetByIdAsync(
+            request.Id,
+            cancellationToken);
 
-        await _repository.AddAsync(entity, cancellationToken);
+        if (entity == null)
+        {
+            throw new NotFoundException(
+                $"Land opportunity with id '{request.Id}' was not found.");
+        }
+
+        entity.Name = request.Name;
+        entity.Location = request.Location;
+        entity.LandSizeAcres = request.LandSizeAcres;
+        entity.AskingPrice = request.AskingPrice;
+        entity.Source = request.Source;
+        entity.AgentName = request.AgentName;
+        entity.ExpectedAcquisitionDate = request.ExpectedAcquisitionDate;
+        entity.Notes = request.Notes;
+        entity.UpdatedAtUtc = _dateTimeProvider.UtcNow;
+        entity.UpdatedBy = _currentUserService.UserId;
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

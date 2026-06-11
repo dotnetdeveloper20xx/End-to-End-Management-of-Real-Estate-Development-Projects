@@ -1,4 +1,5 @@
 ﻿using BuildEstate.Application.Abstractions;
+using BuildEstate.Application.Common.Repositories;
 using BuildEstate.Application.Land.Repositories;
 using BuildEstate.Infrastructure.Persistence;
 using BuildEstate.Infrastructure.Repositories.Land;
